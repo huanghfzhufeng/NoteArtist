@@ -22,13 +22,15 @@ const NeoCard: React.FC<NeoCardProps> = ({
   className = '',
 }) => {
   return (
-    <div className={`relative border-4 border-black ${bgColors[color]} shadow-[8px_8px_0px_0px_#000] p-6 ${className}`}>
+    <div className={`group relative border-4 border-black ${bgColors[color]} shadow-[8px_8px_0px_0px_#000] p-8 transition-transform duration-200 hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[10px_10px_0px_0px_#000] ${className}`}>
       {title && (
-        <div className="absolute -top-5 left-4 bg-black text-white px-3 py-1 border-4 border-black font-black uppercase text-sm tracking-widest -rotate-1">
+        <div className="absolute -top-6 left-6 bg-black text-white px-4 py-1.5 border-4 border-black font-black uppercase text-sm tracking-[0.2em] -rotate-2 group-hover:rotate-0 transition-transform duration-200">
           {title}
         </div>
       )}
-      {children}
+      <div className="relative z-10">
+        {children}
+      </div>
     </div>
   );
 };

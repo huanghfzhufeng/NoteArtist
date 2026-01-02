@@ -35,6 +35,18 @@ class Settings(BaseSettings):
     RATE_LIMIT_REQUESTS: int = 10
     RATE_LIMIT_WINDOW_SECONDS: int = 60
     
+    # AI API 配置 (Google Generative AI via Antigravity proxy)
+    OPENAI_API_KEY: str = ""
+    OPENAI_API_BASE: str = "http://host.docker.internal:8045"
+    TEXT_MODEL: str = "gemini-3-flash"
+    IMAGE_MODEL: str = "gemini-3-pro-image"
+    IMAGE_SIZE: str = "1024x1024"
+
+    # 向后兼容的别名
+    @property
+    def GEMINI_API_KEY(self) -> str:
+        return self.OPENAI_API_KEY
+    
     @field_validator('DATABASE_URL')
     @classmethod
     def validate_database_url(cls, v: str) -> str:

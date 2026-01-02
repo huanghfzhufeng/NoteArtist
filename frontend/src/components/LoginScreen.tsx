@@ -50,87 +50,101 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ onLogin }) => {
 
   return (
     <div className="min-h-screen bg-[#FFFDF5] flex flex-col items-center justify-center p-6 relative overflow-hidden">
-      {/* Animated Background Pattern */}
-      <div className="absolute inset-0 overflow-hidden">
+      {/* Optimized Background Pattern */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div
-          className="absolute inset-0 opacity-[0.03]"
+          className="absolute inset-0 opacity-[0.05]"
           style={{
-            backgroundImage: 'radial-gradient(#000 1.5px, transparent 1.5px)',
-            backgroundSize: '24px 24px'
+            backgroundImage: 'radial-gradient(#000 2px, transparent 2px)',
+            backgroundSize: '32px 32px'
           }}
         />
-        {/* Floating decorative elements */}
-        <div className="absolute top-20 left-20 w-32 h-32 bg-[#FFD93D] border-4 border-black rotate-12 opacity-20 animate-pulse" />
-        <div className="absolute bottom-32 right-20 w-24 h-24 bg-[#FF6B6B] border-4 border-black -rotate-12 opacity-20 animate-pulse" style={{ animationDelay: '0.5s' }} />
-        <div className="absolute top-1/3 right-1/4 w-16 h-16 bg-[#4ECDC4] border-4 border-black rotate-45 opacity-20 animate-pulse" style={{ animationDelay: '1s' }} />
+        {/* Floating decorative elements with refined animations */}
+        <div className="absolute top-[10%] left-[10%] w-40 h-40 bg-[#FFD93D] border-4 border-black rotate-12 opacity-30 animate-float" />
+        <div className="absolute bottom-[10%] right-[5%] w-32 h-32 bg-[#FF6B6B] border-4 border-black -rotate-12 opacity-30 animate-float" style={{ animationDelay: '-2s' }} />
+        <div className="absolute top-[40%] right-[10%] w-20 h-20 bg-[#4ECDC4] border-4 border-black rotate-45 opacity-30 animate-float" style={{ animationDelay: '-4s' }} />
+        <div className="absolute bottom-[20%] left-[15%] w-12 h-12 bg-[#C4B5FD] border-4 border-black -rotate-45 opacity-30 animate-pulse" />
       </div>
 
-      <div className="w-full max-w-md relative z-10">
-        {/* Logo Section */}
-        <div className="text-center mb-10">
-          <div className="inline-block relative">
-            <div className="w-24 h-24 bg-[#FFD93D] border-4 border-black flex items-center justify-center shadow-[8px_8px_0px_0px_#000] transform hover:rotate-3 transition-transform cursor-pointer">
+      <div className="w-full max-w-md relative z-10 animate-spring-in">
+        {/* Logo Section - Enhanced */}
+        <div className="text-center mb-12">
+          <div className="inline-block relative group cursor-crosshair">
+            <div className="w-24 h-24 bg-[#FFD93D] border-4 border-black flex items-center justify-center shadow-[8px_8px_0px_0px_#000] transform transition-transform group-hover:rotate-6 group-active:translate-x-1 group-active:translate-y-1 group-active:shadow-none">
               <Zap className="w-12 h-12 fill-black stroke-black" />
             </div>
-            <Sparkles className="absolute -top-2 -right-2 w-6 h-6 text-[#FF6B6B] animate-pulse" />
+            <Sparkles className="absolute -top-4 -right-4 w-8 h-8 text-[#FF6B6B] animate-pulse" />
           </div>
-          <h1 className="text-5xl md:text-6xl font-black uppercase tracking-tighter mt-6 mb-3">
-            Note<span className="text-[#FF6B6B]">Artist</span>
-          </h1>
-          <div className="inline-block bg-black text-white px-4 py-2 transform -rotate-1">
-            <p className="font-bold text-sm uppercase tracking-widest">
-              ✨ AI 内容创作工作室 ✨
-            </p>
+
+          <div className="mt-8 relative inline-block">
+            <h1 className="text-6xl md:text-7xl font-black uppercase tracking-tighter leading-none">
+              Note<span className="text-[#FF6B6B]">Artist</span>
+            </h1>
+            <div className="absolute -bottom-2 -right-4 w-full h-3 bg-[#4ECDC4] -z-10 opacity-50 skew-x-12" />
+          </div>
+
+          <div className="mt-6">
+            <div className="inline-block bg-black text-white px-6 py-2.5 transform -rotate-1 shadow-[4px_4px_0px_0px_#FFD93D]">
+              <p className="font-black text-xs uppercase tracking-[0.3em]">
+                ✨ AI 内容创作工作室 ✨
+              </p>
+            </div>
           </div>
         </div>
 
         {/* Login Card */}
-        <div className="transform hover:rotate-0 transition-transform" style={{ transform: 'rotate(1deg)' }}>
-          <NeoCard 
-            title={isRegister ? '🚀 创建账号' : '🔐 登录系统'} 
+        <div className="transform hover:rotate-1 transition-transform duration-300">
+          <NeoCard
+            title={isRegister ? '🚀 开启创作之路' : '🔐 欢迎回来'}
             color="white"
+            className="shadow-[12px_12px_0px_0px_#000]"
           >
-            <form onSubmit={handleSubmit} className="space-y-5 mt-4">
+            <form onSubmit={handleSubmit} className="space-y-6 mt-6">
               {error && (
-                <div className="bg-[#FF6B6B] border-4 border-black p-3 text-white font-bold text-sm shadow-[4px_4px_0px_0px_#000]">
+                <div className="bg-[#FF6B6B] border-4 border-black p-4 text-white font-black text-sm shadow-[4px_4px_0px_0px_#000] animate-in slide-in-from-top-2">
                   ⚠️ {error}
                 </div>
               )}
 
               <NeoInput
-                label="用户名"
-                placeholder="输入你的用户名"
+                label="创作账号"
+                placeholder="输入用户名"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
               />
               <NeoInput
                 type="password"
-                label="密码"
-                placeholder="输入你的密码"
+                label="访问密钥"
+                placeholder="输入密码"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
               />
 
-              <NeoButton
-                variant="primary"
-                className="w-full text-lg h-14"
-                type="submit"
-                disabled={loading}
-                icon={loading ? undefined : (isRegister ? UserPlus : Key)}
-              >
-                {loading ? '处理中...' : (isRegister ? '立即注册' : '进入工作室')}
-              </NeoButton>
+              <div className="pt-2">
+                <NeoButton
+                  variant="primary"
+                  className="w-full text-xl py-8"
+                  type="submit"
+                  disabled={loading}
+                  icon={loading ? undefined : (isRegister ? UserPlus : Key)}
+                >
+                  {loading ? '同步中...' : (isRegister ? '立即加入' : '进入工作室')}
+                </NeoButton>
+              </div>
 
-              <div className="text-center pt-2">
+              <div className="text-center pt-4 border-t-4 border-black/5">
                 <button
                   type="button"
                   onClick={() => {
                     setIsRegister(!isRegister);
                     setError('');
                   }}
-                  className="font-bold text-sm underline decoration-2 underline-offset-4 hover:text-[#FF6B6B] hover:decoration-[#FF6B6B] transition-colors"
+                  className="group relative font-black text-xs uppercase tracking-widest text-zinc-500 hover:text-black transition-colors"
                 >
-                  {isRegister ? '← 已有账号？点击登录' : '没有账号？点击注册 →'}
+                  <span className="relative z-10">
+                    {isRegister ? '← 已有凭证？点击验证' : '没有身份？点击注册 →'}
+                  </span>
+                  <div className="absolute -bottom-1 left-0 w-0 h-1 bg-[#FFD93D] group-hover:w-full transition-all duration-300" />
                 </button>
               </div>
             </form>
@@ -138,9 +152,16 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ onLogin }) => {
         </div>
 
         {/* Footer */}
-        <p className="text-center mt-8 text-sm font-bold text-gray-400">
-          Powered by Gemini & Imagen AI
-        </p>
+        <div className="text-center mt-12 space-y-2 opacity-50">
+          <p className="text-[10px] font-black uppercase tracking-[0.4em] text-zinc-400">
+            Precision crafted by NoteArtist Team
+          </p>
+          <div className="flex justify-center gap-4 text-[10px] font-bold text-zinc-400">
+            <span>GEMINI 2.0</span>
+            <span className="w-1 h-1 bg-zinc-300 rounded-full my-auto" />
+            <span>IMAGEN AI</span>
+          </div>
+        </div>
       </div>
     </div>
   );

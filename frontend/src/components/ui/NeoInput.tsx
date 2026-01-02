@@ -19,12 +19,14 @@ const NeoInput: React.FC<NeoInputProps> = ({
   className = '',
   type = 'text'
 }) => {
+  const baseInput = "w-full border-4 border-black bg-white p-4 font-bold placeholder:text-zinc-400 focus:outline-none focus:bg-[#FFFDF5] focus:shadow-[4px_4px_0px_0px_#000] focus:-translate-x-[2px] focus:-translate-y-[2px] transition-all duration-150";
+
   return (
-    <div className={`flex flex-col gap-2 ${className}`}>
-      {label && <label className="font-bold uppercase tracking-wide text-sm">{label}</label>}
+    <div className={`flex flex-col gap-2.5 ${className}`}>
+      {label && <label className="font-black uppercase tracking-[0.2em] text-xs text-zinc-500 ml-1">{label}</label>}
       {rows > 1 ? (
         <textarea
-          className="w-full border-4 border-black bg-white p-4 text-sm md:text-base font-bold placeholder:text-black/30 focus:outline-none focus:bg-[#FFD93D] focus:shadow-[4px_4px_0px_0px_#000] transition-all duration-100 resize-none font-mono leading-relaxed"
+          className={`${baseInput} text-sm md:text-base resize-none font-mono leading-relaxed min-h-[120px]`}
           rows={rows}
           placeholder={placeholder}
           value={value}
@@ -33,7 +35,7 @@ const NeoInput: React.FC<NeoInputProps> = ({
       ) : (
         <input
           type={type}
-          className="h-14 w-full border-4 border-black bg-white px-4 text-lg font-bold placeholder:text-black/30 focus:outline-none focus:bg-[#FFD93D] focus:shadow-[4px_4px_0px_0px_#000] transition-all duration-100"
+          className={`${baseInput} h-14 text-lg`}
           placeholder={placeholder}
           value={value}
           onChange={onChange}

@@ -1,3 +1,15 @@
+:root {
+  --neo-red: #FF6B6B;
+  --neo-yellow: #FFD93D;
+  --neo-cyan: #4ECDC4;
+  --neo-violet: #C4B5FD;
+  --neo-black: #050505;
+  --neo-white: #FFFFFF;
+  --neo-cream: #FFFDF5;
+  --neo-shadow: 4px 4px 0px 0px var(--neo-black);
+  --neo-shadow-lg: 8px 8px 0px 0px var(--neo-black);
+}
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -11,6 +23,22 @@ body {
   margin: 0;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  background-color: var(--neo-cream);
+  color: var(--neo-black);
+}
+
+/* Noise texture overlay */
+body::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0.04;
+  z-index: 9999;
+  pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w4.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
 }
 
 /* Custom scrollbar hide */
@@ -23,6 +51,25 @@ body {
 }
 
 /* Animation keyframes */
+@keyframes spring-in {
+  0% { transform: scale(0.9); opacity: 0; }
+  70% { transform: scale(1.02); opacity: 1; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0) rotate(0); }
+  50% { transform: translateY(-10px) rotate(2deg); }
+}
+
+.animate-spring-in {
+  animation: spring-in 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) both;
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
 @keyframes spin-slow {
   from {
     transform: rotate(0deg);
@@ -38,8 +85,8 @@ body {
 
 /* Selection color */
 ::selection {
-  background-color: #FF6B6B;
-  color: black;
+  background-color: var(--neo-red);
+  color: white;
 }
 
 /* Animate-in utilities */

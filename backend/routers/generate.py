@@ -3,13 +3,14 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 
 from database import get_db
-from models import Settings, Persona, Work, User
+from models import Persona, Work, User
 from schemas.generate import GenerateRequest, GenerateResponse, SaveWorkRequest, SaveWorkResponse
 from deps import get_current_user
 from services.gemini import GeminiService
 from services.imagen import ImagenService
 from services.storage import get_storage_service
 from exceptions import ExternalAPIError, StorageError
+from config import settings
 
 router = APIRouter()
 
@@ -21,22 +22,12 @@ async def generate_content(
     current_user: User = Depends(get_current_user)
 ):
     """Generate image and copy from content using AI"""
-    # Get user's API settings
-    result = await db.execute(
-        select(Settings).where(Settings.user_id == current_user.id)
-    )
-    settings = result.scalar_one_or_none()
     
-    if not settings or not settings.gemini_api_key:
+    # Check if API is configured in .env
+    if not settings.OPENAI_API_KEY:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="请先配置 Gemini API Key"
-        )
-    
-    if not settings.imagen_api_key:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="请先配置 Imagen API Key"
+            detail="系统未配置 API Key，请联系管理员"
         )
     
     # Get persona if specified - 验证归属权
@@ -63,8 +54,8 @@ async def generate_content(
         }
     
     try:
-        # Step 1: Use Gemini to analyze content and generate prompts
-        gemini = GeminiService(settings.gemini_api_key)
+        # Step 1: Use Gemini to analyze content and generate prompts (uses .env config)
+        gemini = GeminiService()
         analysis = await gemini.analyze_content_and_generate_copy(
             content=request.content,
             system_prompt=request.systemPrompt,
@@ -82,8 +73,8 @@ async def generate_content(
                 detail="AI 未能生成图像提示词"
             )
         
-        # Step 2: Use Imagen to generate image
-        imagen = ImagenService(settings.imagen_api_key)
+        # Step 2: Use Imagen to generate image (uses .env config)
+        imagen = ImagenService()
         image_base64 = await imagen.generate_image(image_prompt)
         
         return GenerateResponse(
@@ -104,6 +95,7 @@ async def generate_content(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"生成失败: {str(e)}"
         )
+
 
 
 @router.post("/save", response_model=SaveWorkResponse)

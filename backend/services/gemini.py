@@ -1,62 +1,62 @@
-import httpx
+from openai import OpenAI
 import json
 from typing import Dict, Any, Optional
+import logging
 
+from config import settings
 from exceptions import ExternalAPIError
+
+logger = logging.getLogger(__name__)
 
 
 class GeminiService:
-    """Service for calling Google Gemini API"""
+    """Service for calling Gemini API via Antigravity OpenAI-compatible proxy"""
+
+    def __init__(self):
+        self.client = OpenAI(
+            base_url=f"{settings.OPENAI_API_BASE}/v1",
+            api_key=settings.OPENAI_API_KEY
+        )
+        self.model = settings.TEXT_MODEL
     
-    BASE_URL = "https://generativelanguage.googleapis.com/v1beta/models"
-    MODEL = "gemini-2.5-flash-preview-09-2025"
-    
-    def __init__(self, api_key: str):
-        self.api_key = api_key
-    
-    async def generate_content(
-        self, 
-        prompt: str, 
-        system_instruction: str = "", 
+    def generate_content(
+        self,
+        prompt: str,
+        system_instruction: str = "",
         json_mode: bool = False
     ) -> Any:
-        """Generate content using Gemini API"""
-        url = f"{self.BASE_URL}/{self.MODEL}:generateContent?key={self.api_key}"
-        
-        payload: Dict[str, Any] = {
-            "contents": [{"parts": [{"text": prompt}]}]
-        }
-        
+        """Generate content using Gemini API via Antigravity OpenAI-compatible proxy"""
+
+        messages = []
         if system_instruction:
-            payload["systemInstruction"] = {"parts": [{"text": system_instruction}]}
-        
-        if json_mode:
-            payload["generationConfig"] = {"responseMimeType": "application/json"}
-        
+            messages.append({"role": "system", "content": system_instruction})
+        messages.append({"role": "user", "content": prompt})
+
         try:
-            async with httpx.AsyncClient(timeout=60.0) as client:
-                response = await client.post(url, json=payload)
-                
-                if response.status_code != 200:
-                    raise ExternalAPIError("Gemini", f"API返回错误: {response.status_code}")
-                
-                data = response.json()
-                text = data.get("candidates", [{}])[0].get("content", {}).get("parts", [{}])[0].get("text")
-                
-                if not text:
-                    raise ExternalAPIError("Gemini", "未生成内容")
-                
-                if json_mode:
-                    # Clean up JSON response
-                    cleaned_text = text.replace("```json\n", "").replace("\n```", "").strip()
-                    return json.loads(cleaned_text)
-                
-                return text
-                
-        except httpx.RequestError as e:
-            raise ExternalAPIError("Gemini", f"请求失败: {str(e)}")
+            logger.info(f"Generating content with model: {self.model}")
+            response = self.client.chat.completions.create(
+                model=self.model,
+                messages=messages
+            )
+
+            text = response.choices[0].message.content
+
+            if not text:
+                raise ExternalAPIError("Gemini", "未生成内容")
+
+            if json_mode:
+                # Clean up JSON response
+                cleaned_text = text.replace("```json\n", "").replace("\n```", "").replace("```json", "").replace("```", "").strip()
+                return json.loads(cleaned_text)
+
+            return text
+
         except json.JSONDecodeError as e:
+            logger.exception(f"JSON decode error: {e}")
             raise ExternalAPIError("Gemini", f"JSON解析失败: {str(e)}")
+        except Exception as e:
+            logger.exception(f"Content generation failed: {e}")
+            raise ExternalAPIError("Gemini", f"请求失败: {str(e)}")
     
     async def analyze_content_and_generate_copy(
         self,
@@ -108,7 +108,7 @@ class GeminiService:
 {content}
 """
         
-        result = await self.generate_content(
+        result = self.generate_content(
             prompt=analysis_prompt,
             system_instruction=analysis_system_prompt,
             json_mode=True

@@ -6,6 +6,7 @@ from database import get_db
 from models import Settings, User
 from schemas.settings import SettingsUpdate, SettingsResponse
 from deps import get_current_user
+from config import settings as app_settings
 
 router = APIRouter()
 
@@ -25,6 +26,21 @@ async def get_settings(
     current_user: User = Depends(get_current_user)
 ):
     """Get user's API settings with masked keys"""
+    
+    # Check if system has configured API in .env
+    system_configured = bool(app_settings.GEMINI_API_KEY)
+    
+    if system_configured:
+        # Return system-configured status
+        return SettingsResponse(
+            id=0,
+            geminiApiKey="🔒 系统已配置",
+            imagenApiKey="🔒 系统已配置", 
+            userId=current_user.id,
+            systemConfigured=True
+        )
+    
+    # Fallback to user's database settings
     result = await db.execute(
         select(Settings).where(Settings.user_id == current_user.id)
     )
@@ -41,7 +57,8 @@ async def get_settings(
         id=settings.id,
         geminiApiKey=mask_api_key(settings.gemini_api_key),
         imagenApiKey=mask_api_key(settings.imagen_api_key),
-        userId=settings.user_id
+        userId=settings.user_id,
+        systemConfigured=False
     )
 
 
@@ -52,6 +69,14 @@ async def update_settings(
     current_user: User = Depends(get_current_user)
 ):
     """Update user's API settings"""
+    
+    # If system is configured, don't allow user updates
+    if app_settings.GEMINI_API_KEY:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="系统已配置 API Key，无需手动设置"
+        )
+    
     result = await db.execute(
         select(Settings).where(Settings.user_id == current_user.id)
     )
@@ -80,5 +105,7 @@ async def update_settings(
         id=settings.id,
         geminiApiKey=mask_api_key(settings.gemini_api_key),
         imagenApiKey=mask_api_key(settings.imagen_api_key),
-        userId=settings.user_id
+        userId=settings.user_id,
+        systemConfigured=False
     )
+

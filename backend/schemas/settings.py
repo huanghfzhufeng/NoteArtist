@@ -8,10 +8,11 @@ class SettingsUpdate(BaseModel):
 
 
 class SettingsResponse(BaseModel):
-    id: str
+    id: int
     geminiApiKey: Optional[str] = None  # Will be masked
     imagenApiKey: Optional[str] = None  # Will be masked
     userId: str
+    systemConfigured: bool = False  # True if API is configured in .env
 
     class Config:
         from_attributes = True

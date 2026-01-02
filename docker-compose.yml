@@ -80,6 +80,12 @@ services:
       MAX_IMAGE_SIZE_MB: ${MAX_IMAGE_SIZE_MB:-10}
       RATE_LIMIT_REQUESTS: ${RATE_LIMIT_REQUESTS:-10}
       RATE_LIMIT_WINDOW_SECONDS: ${RATE_LIMIT_WINDOW_SECONDS:-60}
+      # AI API (via Antigravity proxy)
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
+      OPENAI_API_BASE: ${OPENAI_API_BASE:-http://host.docker.internal:8045}
+      TEXT_MODEL: ${TEXT_MODEL:-gemini-3-flash}
+      IMAGE_MODEL: ${IMAGE_MODEL:-gemini-3-pro-image}
+      IMAGE_SIZE: ${IMAGE_SIZE:-1024x1024}
     ports:
       - "127.0.0.1:8000:8000"
     depends_on:
